@@ -15,9 +15,24 @@ Version numbering will be introduced when application builds become available.
 - Added `README.md` documenting the project scope, design direction, destinations and technical approach.
 - Added `ROADMAP.md` defining development phases and verification requirements.
 
+- Added Kotlin/Jetpack Compose Android application scaffold.
+- Added Android TV manifest support and application banner.
+- Integrated Compose for TV with four focusable destination buttons.
+- Added initial Sony compatibility and device testing documentation.
+
+### Verified
+
+- Android 12 / API 31 compatibility on Sony KD-50X85K.
+- Successful debug APK build, installation and launch.
+- Application launches from Projectivy's application menu.
+- D-pad LEFT/RIGHT navigation and initial focus.
+- OK selection updates the selected destination.
+- HOME and BACK return to Projectivy.
+- Sony REST API switches to DS9 on HDMI 2 using PSK authentication from Voyager.
+
 ### Notes
 
-- Repository foundation is underway.
-- No Android application code has been implemented.
-- Sony KD-50X85K platform compatibility remains unverified.
-- No application builds or releases have been produced.
+- Four destinations are currently non-functional placeholders.
+- HDMI switching from within FalCor remains untested.
+- Native HOME replacement and recovery remain untested.
+- Debug APKs are available; no release has been published.

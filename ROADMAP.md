@@ -2,9 +2,9 @@
 
 ## Project Status
 
-**Current phase:** Foundation and platform verification.
+**Current phase:** Compose for TV foundation complete; FalCor interface development active.
 
-FalCor has not yet been implemented or tested on the Sony KD-50X85K.
+FalCor builds and runs on the Sony KD-50X85K. Initial D-pad navigation and selection are verified. Destination actions and HOME replacement are not yet implemented.
 
 ## Completed — Repository Foundation
 
@@ -15,28 +15,30 @@ FalCor has not yet been implemented or tested on the Sony KD-50X85K.
 
 ## Active — Foundation and Compatibility
 
-- [ ] Create `ROADMAP.md` and `CHANGELOG.md`.
-- [ ] Establish initial documentation under `docs/`.
-- [ ] Verify Android version, API level and firmware build.
-- [ ] Establish ADB connectivity to the Sony KD-50X85K.
-- [ ] Investigate Projectivy and default HOME behaviour.
+- [x] Create `ROADMAP.md` and `CHANGELOG.md`.
+- [x] Establish initial documentation under `docs/`.
+- [x] Verify Android version, API level and firmware build.
+- [x] Establish ADB connectivity to the Sony KD-50X85K.
+- [x] Investigate Projectivy and default HOME behaviour.
 - [ ] Determine a safe launcher recovery procedure.
-- [ ] Investigate supported HDMI input switching mechanisms.
-- [ ] Verify application launching and remote-control compatibility.
-- [ ] Confirm development SDK and Compose for TV compatibility.
+- [x] Verify Sony REST API HDMI switching from Voyager over LAN.
+- [x] Verify FalCor application launching and basic remote-control compatibility.
+- [x] Confirm development SDK and Compose for TV compatibility.
 
-**Exit criteria:** Documented platform findings, a working development environment and a safe recovery procedure.
+**Remaining requirement:** Establish and test safe HOME launcher recovery before replacing Projectivy.
 
 ## Planned — Application Foundation
 
-- [ ] Create Android Studio project using Kotlin.
-- [ ] Configure Jetpack Compose for TV.
+- [x] Create Android Studio project using Kotlin.
+- [x] Configure Jetpack Compose for TV.
 - [ ] Establish application identity and configuration structure.
-- [ ] Build an initial launchable activity.
-- [ ] Verify installation and startup on the television.
-- [ ] Establish basic D-pad navigation and focus handling.
+- [x] Build an initial launchable activity.
+- [x] Verify installation and startup on the television.
+- [x] Establish basic D-pad navigation and focus handling.
 
-## Planned — FalCor Interface
+## Active — FalCor Interface
+
+- [x] Test four provisional destination buttons with D-pad and OK selection.
 
 - [ ] Implement the agreed cinematic home screen.
 - [ ] Implement Holodeck, DS9, Sport and Free-to-Air destinations.

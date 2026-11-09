@@ -9,11 +9,11 @@ It provides a cinematic, remote-friendly interface to the existing home entertai
 
 ## Project Status
 
-**Phase: Foundation and platform verification**
+**Phase: TV navigation foundation complete; interface development active.**
 
-The application has not yet been implemented.
+FalCor builds and runs on the Sony KD-50X85K. Four focusable destinations and remote navigation have been tested successfully.
 
-Default launcher behaviour, HDMI input switching and device-specific Android TV compatibility require verification before implementation.
+Sony REST API HDMI switching has been verified from Voyager. HDMI switching from FalCor and native HOME replacement remain untested.
 
 ## Design
 
