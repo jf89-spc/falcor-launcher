@@ -61,16 +61,44 @@ The relationship between Android's HOME role, intent resolution and Projectivy's
 
 No launcher configuration changes have been performed during verification.
 
+
 ## HDMI Input Switching
 
-Status: Not tested.
+Status: Verified from Voyager over LAN (2026-11-09).
 
-Required investigation:
+### Input Mapping
 
-- Android TV input APIs and permission restrictions.
-- Sony BRAVIA input switching capabilities.
-- Whether unprivileged applications can request HDMI changes.
-- Alternative mechanisms if direct switching is restricted.
+- HDMI 1: Voyager / PS5 (occasionally connected).
+- HDMI 2: DS9 Intel NUC.
+- HDMI 3: Sony HT-S100F soundbar (ARC/eARC).
+- HDMI 4: Unassigned.
+
+### Verified Method
+
+Sony BRAVIA REST API:
+
+- Endpoint: `/sony/avContent`
+- Method: `setPlayContent`
+- Version: `1.0`
+- Destination URI: `extInput:hdmi?port=2`
+- Authentication: `X-Auth-PSK` HTTP header
+
+Successfully switched from Projectivy to DS9 using an authenticated HTTP request from Voyager.
+
+### Television Configuration
+
+- Authentication: Normal and Pre-Shared Key.
+- Simple IP control: Off.
+- Control4: Off.
+
+### Outstanding Verification
+
+- Confirm an Android application running on the television can access the Sony REST API.
+- Determine secure storage and configuration of the PSK.
+- Verify input switching remains functional following television restart.
+- Implement a replaceable Sony HDMI switching adapter.
+
+Never store the PSK in Git.
 
 ## Application Compatibility
 
