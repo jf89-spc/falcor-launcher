@@ -1,6 +1,8 @@
 package com.falcor.launcher
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -87,6 +89,22 @@ private val destinations = listOf(
 
 class MainActivity : ComponentActivity() {
 
+    private var homeRequest by mutableStateOf(0)
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+
+        if (
+            intent.action == Intent.ACTION_MAIN &&
+            intent.hasCategory(Intent.CATEGORY_HOME)
+        ) {
+            homeRequest++
+            Log.d("FalCorNavigation", "HOME intent received")
+        }
+    }
+
+
     private val hdmiController by lazy {
         SonyHdmiController(this)
     }
@@ -97,6 +115,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MaterialTheme {
                 FalCorHome(
+                    homeRequest = homeRequest,
                     onHdmiSelect = { port ->
                         hdmiController.select(port)
                     },
@@ -111,6 +130,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun FalCorHome(
+    homeRequest: Int,
     onHdmiSelect: (Int) -> Unit,
     onSonySettings: (() -> Unit) -> Unit
 ) {
@@ -135,6 +155,12 @@ private fun FalCorHome(
 
     var lastFocusedHomeIndex by rememberSaveable {
         mutableStateOf(0)
+    }
+
+    LaunchedEffect(homeRequest) {
+        if (homeRequest > 0) {
+            activeCollection = null
+        }
     }
 
     BackHandler(enabled = activeCollection != null) {

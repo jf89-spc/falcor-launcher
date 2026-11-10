@@ -165,3 +165,15 @@ Date: 2026-11-10
 - Credential persistence following television reboot remains untested.
 - Automatic credential replacement following authentication failure remains untested.
 - Native HOME replacement and recovery remain untested.
+
+## Test 008 — Native HOME Navigation
+
+Date: 2026-11-11
+
+- PASS — HOME returns from collection submenus to main screen.
+- PASS — BACK returns from collection submenus to main screen.
+- PASS — Native HOME intents delivered through onNewIntent().
+- PASS — Existing application navigation remains functional.
+
+FalCor uses singleTask launch mode to reuse its existing
+activity. Accessibility interception remains disabled.

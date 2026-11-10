@@ -63,3 +63,10 @@ Version numbering will be introduced when application builds become available.
 - Established reversible Google LauncherX and SetupWraith disabling.
 - Verified automatic startup and launcher persistence.
 - Retained accessibility interception as a compatibility fallback.
+
+## Navigation Refinement
+
+- Added native HOME intent handling.
+- HOME resets collection navigation to the main screen.
+- Retained existing BACK navigation and focus restoration.
+- Configured singleTask activity launch mode.
