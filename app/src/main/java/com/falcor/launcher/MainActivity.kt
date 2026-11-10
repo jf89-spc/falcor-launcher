@@ -73,13 +73,18 @@ private val destinations = listOf(
 )
 
 class MainActivity : ComponentActivity() {
+
+    private val hdmiController by lazy {
+        SonyHdmiController(this)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
             MaterialTheme {
                 FalCorHome { port ->
-                    showSonyHdmiTest(this, port)
+                    hdmiController.select(port)
                 }
             }
         }

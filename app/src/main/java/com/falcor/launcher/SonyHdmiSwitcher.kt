@@ -97,53 +97,142 @@ internal class SonyHdmiSwitcher {
     }
 }
 
-// Temporary test dialog.
-// Replace with secure configuration in the maintenance interface
-// after on-device HDMI switching is verified.
-internal fun showSonyHdmiTest(
-    activity: ComponentActivity,
-    port: Int
+internal class SonyHdmiController(
+    private val activity: ComponentActivity
 ) {
-    val input = EditText(activity).apply {
-        hint = "Sony pre-shared key"
-        setSingleLine(true)
-        inputType = InputType.TYPE_CLASS_TEXT or
-            InputType.TYPE_TEXT_VARIATION_PASSWORD
-        imeOptions = EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING
-        importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO
-        isSaveEnabled = false
-    }
+    private val store = SonyPskStore(
+        activity.applicationContext
+    )
 
-    val dialog = AlertDialog.Builder(activity)
-        .setTitle("DS9 — HDMI $port")
-        .setMessage("Enter the Sony TV pre-shared key.")
-        .setView(input)
-        .setNegativeButton("Cancel", null)
-        .setPositiveButton("Switch") { _, _ ->
+    private val switcher = SonyHdmiSwitcher()
+    private var busy = false
 
-            val psk = input.text.toString()
-            input.text.clear()
+    fun select(port: Int) {
+        if (busy) return
+        busy = true
 
-            if (psk.isBlank()) {
-                Toast.makeText(
-                    activity,
-                    "Pre-shared key required",
-                    Toast.LENGTH_SHORT
-                ).show()
+        activity.lifecycleScope.launch {
+            val saved = withContext(Dispatchers.IO) {
+                runCatching { store.read() }
+            }
+
+            val psk = saved.getOrNull()
+
+            if (psk == null) {
+                val message = if (saved.isFailure) {
+                    "Saved credential unavailable. Enter the Sony PSK again."
+                } else {
+                    "Enter the Sony PSK. It will be saved after a successful switch."
+                }
+
+                showSetup(port, message)
+                return@launch
+            }
+
+            val error = switcher.switchTo(port, psk)
+
+            if (isAuthenticationError(error)) {
+                showSetup(
+                    port,
+                    "The saved PSK was rejected. Enter the current Sony PSK."
+                )
             } else {
-                activity.lifecycleScope.launch {
-                    val error = SonyHdmiSwitcher().switchTo(port, psk)
+                busy = false
 
-                    Toast.makeText(
-                        activity,
-                        error ?: "HDMI $port request accepted",
-                        Toast.LENGTH_LONG
-                    ).show()
+                if (error != null) {
+                    notifyUser(error)
                 }
             }
         }
-        .create()
+    }
 
-    dialog.setOnDismissListener { input.text.clear() }
-    dialog.show()
+    private fun isAuthenticationError(error: String?): Boolean {
+        return error == "Sony REST API returned HTTP 403" ||
+            error == "Sony REST API returned HTTP 401" ||
+            error == "Sony rejected the request (code 403)" ||
+            error == "Sony rejected the request (code 401)"
+    }
+
+    private fun notifyUser(message: String) {
+        Toast.makeText(
+            activity,
+            message,
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
+    private fun showSetup(port: Int, message: String) {
+        if (activity.isFinishing || activity.isDestroyed) {
+            busy = false
+            return
+        }
+
+        val input = EditText(activity).apply {
+            hint = "Sony pre-shared key"
+            setSingleLine(true)
+            inputType = InputType.TYPE_CLASS_TEXT or
+                InputType.TYPE_TEXT_VARIATION_PASSWORD
+            imeOptions = EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING
+            importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO
+            isSaveEnabled = false
+        }
+
+        var submitted = false
+
+        val dialog = AlertDialog.Builder(activity)
+            .setTitle("Configure DS9")
+            .setMessage(message)
+            .setView(input)
+            .setNegativeButton("Cancel", null)
+            .setPositiveButton("Save and switch") { _, _ ->
+
+                val psk = input.text.toString()
+                input.text.clear()
+
+                if (psk.isBlank()) {
+                    notifyUser("Pre-shared key required")
+                } else {
+                    submitted = true
+
+                    activity.lifecycleScope.launch {
+                        try {
+                            val error = switcher.switchTo(port, psk)
+
+                            if (error != null) {
+                                notifyUser(error)
+                            } else {
+                                val saved = withContext(Dispatchers.IO) {
+                                    runCatching {
+                                        store.save(psk)
+                                    }
+                                }
+
+                                if (saved.isFailure) {
+                                    notifyUser(
+                                        "HDMI switched, but credential could not be saved"
+                                    )
+                                }
+                            }
+                        } finally {
+                            busy = false
+                        }
+                    }
+                }
+            }
+            .create()
+
+        dialog.setOnDismissListener {
+            input.text.clear()
+
+            if (!submitted) {
+                busy = false
+            }
+        }
+
+        dialog.show()
+
+        dialog.window?.addFlags(
+            android.view.WindowManager.LayoutParams.FLAG_SECURE
+        )
+    }
 }

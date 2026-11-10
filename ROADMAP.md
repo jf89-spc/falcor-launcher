@@ -52,7 +52,7 @@ FalCor builds and runs on the Sony KD-50X85K. Initial D-pad navigation and selec
 - [ ] Implement Sport application selection and launching.
 - [ ] Implement Free-to-Air application selection and launching.
 - [x] Implement and verify DS9 HDMI switching through the Sony REST adapter.
-- [ ] Store Sony PSK securely and enable single-press DS9 switching.
+- [x] Store Sony PSK securely and enable single-press DS9 switching.
 - [ ] Handle missing or unavailable applications gracefully.
 
 ## Planned — System Integration

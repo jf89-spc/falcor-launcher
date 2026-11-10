@@ -22,11 +22,13 @@ Version numbering will be introduced when application builds become available.
 
 - Added cinematic home interface using the approved FalCor artwork.
 - Added Holodeck application launching.
-- Added Sony REST HDMI switching adapter with temporary PSK entry.
+- Added Sony REST HDMI switching adapter.
+- Added Android Keystore-backed PSK storage and single-press DS9 switching.
 
 - Added cinematic home interface using the approved FalCor artwork.
 - Added Holodeck application launching.
-- Added Sony REST HDMI switching adapter with temporary PSK entry.
+- Added Sony REST HDMI switching adapter.
+- Added Android Keystore-backed PSK storage and single-press DS9 switching.
 
 ### Verified
 
@@ -41,6 +43,6 @@ Version numbering will be introduced when application builds become available.
 ### Notes
 
 - Holodeck and DS9 are functional. Sport and Free-to-Air remain placeholders.
-- HDMI switching from FalCor via localhost is verified. Persistent credential storage remains pending.
+- HDMI switching from FalCor via localhost is verified. Credential persistence is verified following application restart.
 - Native HOME replacement and recovery remain untested.
 - Debug APKs are available; no release has been published.

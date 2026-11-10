@@ -103,3 +103,13 @@ Date: 2026-11-10
 - DS9 requires manual PSK entry for each switch.
 - Secure persistent credential storage remains pending.
 - FalCor is not yet the default HOME launcher.
+
+## Test 004 — Persistent DS9 Credentials
+
+Date: 2026-11-10
+
+- PASS — Sony PSK saved following successful HDMI switching.
+- PASS — DS9 switches without prompting for the PSK.
+- PASS — Credential persists after application force-stop and restart.
+- NOT TESTED — Persistence following television reboot.
+- NOT TESTED — Credential replacement after authentication failure.
