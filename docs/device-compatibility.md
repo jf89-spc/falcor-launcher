@@ -118,3 +118,88 @@ Status: Not tested.
 Google LauncherX and Projectivy remain installed.
 
 Do not disable either launcher or modify HOME role assignments until a recovery procedure is established and tested.
+
+## Native HOME Integration — 2026-11-10
+
+- PASS — FalCor registers as a native HOME candidate.
+- PASS — ADB can assign FalCor the HOME role.
+- PASS — Explicit HOME intent launches FalCor as a HOME task.
+- FAIL — Physical HOME button opens FalCor using native
+  registration and role assignment alone.
+- With Projectivy accessibility disabled, the physical HOME
+  button returns to Google LauncherX.
+- Explicit activation of FalCor as a HOME task does not
+  resolve the physical HOME button behaviour.
+
+### Architecture Decision
+
+Implement an optional, narrowly scoped accessibility service
+to redirect Google LauncherX to FalCor.
+
+Keep Google LauncherX and Projectivy installed and enabled.
+Native HOME registration will be retained.
+
+The accessibility service must be explicitly enabled by the
+operator and must not inspect application content or collect
+user data.
+
+## Native HOME Integration — 2026-11-10
+
+- PASS — FalCor registers as a native HOME candidate.
+- PASS — ADB can assign FalCor the HOME role.
+- PASS — Explicit HOME intent launches FalCor as a HOME task.
+- FAIL — Physical HOME button opens FalCor using native
+  registration and role assignment alone.
+- With Projectivy accessibility disabled, the physical HOME
+  button returns to Google LauncherX.
+- Explicit activation of FalCor as a HOME task does not
+  resolve the physical HOME button behaviour.
+
+### Architecture Decision
+
+Implement an optional, narrowly scoped accessibility service
+to redirect Google LauncherX to FalCor.
+
+Keep Google LauncherX and Projectivy installed and enabled.
+Native HOME registration will be retained.
+
+The accessibility service must be explicitly enabled by the
+operator and must not inspect application content or collect
+user data.
+
+## Native HOME Replacement — 2026-11-11
+
+Final working configuration on Sony KD-50X85K:
+
+- FalCor registered as native HOME and assigned the HOME role.
+- Google LauncherX disabled for Android user 0.
+- Google SetupWraith disabled for Android user 0.
+- FalCor accessibility service disabled.
+- Projectivy retained for recovery.
+- Television connected via Ethernet.
+
+HOME resolution returns com.falcor.launcher/.MainActivity.
+Startup, persistence and normal navigation verified.
+
+This configuration supersedes the accessibility-based
+workaround described above for this television.
+
+### Restore Google TV components
+
+    adb shell pm enable --user 0 com.google.android.tungsten.setupwraith
+    adb shell pm enable --user 0 com.google.android.apps.tv.launcherx
+
+Projectivy recovery remains available using the previously
+documented HOME assignment and accessibility procedure.
+
+### Remaining compatibility considerations
+
+SetupWraith owns a saved Wi-Fi configuration on this device.
+The television currently uses Ethernet.
+
+Casting, Wi-Fi reconnection, factory reset and future
+firmware updates have not been verified with SetupWraith
+disabled.
+
+The accessibility implementation remains available as an
+optional compatibility fallback.

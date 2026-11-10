@@ -56,3 +56,10 @@ Version numbering will be introduced when application builds become available.
 - HDMI switching from FalCor via localhost is verified. Credential persistence is verified following application restart.
 - Native HOME replacement and recovery remain untested.
 - Debug APKs are available; no release has been published.
+
+## Native HOME Replacement
+
+- Verified native HOME operation without accessibility interception.
+- Established reversible Google LauncherX and SetupWraith disabling.
+- Verified automatic startup and launcher persistence.
+- Retained accessibility interception as a compatibility fallback.
