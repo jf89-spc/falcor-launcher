@@ -49,11 +49,35 @@ FalCor builds and runs on the Sony KD-50X85K. Initial D-pad navigation and selec
 ## Planned — Destination Integration
 
 - [x] Launch the installed Jellyfin Android TV client.
-- [ ] Implement Sport application selection and launching.
-- [ ] Implement Free-to-Air application selection and launching.
+- [x] Implement configurable Sport application selection and launching.
+- [x] Implement configurable Free-to-Air application selection and launching.
 - [x] Implement and verify DS9 HDMI switching through the Sony REST adapter.
 - [x] Store Sony PSK securely and enable single-press DS9 switching.
-- [ ] Handle missing or unavailable applications gracefully.
+- [ ] Verify stored Sony credentials survive television reboot.
+- [ ] Test credential replacement following authentication failure.
+- [ ] Add credential configuration and reset to the maintenance interface.
+- [x] Handle missing or unavailable applications gracefully.
+
+## Completed — Configurable Application Collections
+
+- [x] Discover installed Android TV applications dynamically.
+- [x] Persist independently configurable Sport and Free-to-Air collections.
+- [x] Add, remove and reorder applications using collection management.
+- [x] Long-press an application card to manage it directly.
+- [x] Preserve collection changes across application restarts.
+
+## Planned — Collection Refinements
+
+- [ ] Implement visual pick-up-and-move reordering using the D-pad.
+  - Long-press an application and select Move.
+  - Highlight the lifted card and animate neighbouring cards.
+  - LEFT/RIGHT moves the selected card.
+  - OK confirms and saves the new order.
+  - BACK cancels and restores the original order.
+  - Automatically scroll when moving beyond the visible cards.
+- [ ] Refine collection card styling and spacing.
+- [ ] Verify focus restoration across large scrolling collections.
+- [ ] Verify instrumentation test data preservation.
 
 ## Planned — System Integration
 

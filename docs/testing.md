@@ -113,3 +113,36 @@ Date: 2026-11-10
 - PASS — Credential persists after application force-stop and restart.
 - NOT TESTED — Persistence following television reboot.
 - NOT TESTED — Credential replacement after authentication failure.
+
+## Credential Persistence — Deployment Follow-up
+
+- PASS — Sony PSK survives `adb install -r` followed by
+  application force-stop and restart.
+- PSK was lost following the connected instrumentation test
+  run. Test-related uninstall or cleanup is the suspected
+  cause, not yet independently confirmed.
+- Avoid instrumentation tests against the daily-use FalCor
+  installation until test cleanup and data preservation are
+  verified.
+
+## Test 005 — Configurable Application Collections
+
+Date: 2026-11-10
+
+### Results
+
+- PASS — Sport and Free-to-Air menus load configured applications.
+- PASS — Installed applications launch from the menus.
+- PASS — Dynamic application discovery and collection storage tests.
+- PASS — Add, remove and reorder applications using the collection manager.
+- PASS — Collection changes persist after application restart.
+- PASS — Sport and Free-to-Air configurations remain independent.
+- PASS — Long-press application management operates within submenus.
+- PASS — Existing Holodeck and DS9 functionality remains operational.
+
+### Outstanding Work
+
+- Visual pick-up-and-move reordering is deferred.
+- Focus restoration in large scrolling collections requires further testing.
+- Central maintenance interface remains pending.
+- Instrumentation test cleanup and credential preservation require investigation.

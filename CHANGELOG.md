@@ -30,6 +30,11 @@ Version numbering will be introduced when application builds become available.
 - Added Sony REST HDMI switching adapter.
 - Added Android Keystore-backed PSK storage and single-press DS9 switching.
 
+- Added dynamic Android TV application discovery.
+- Added persistent, configurable Sport and Free-to-Air collections.
+- Added application pickers and collection management.
+- Added long-press application management for reordering and removal.
+
 ### Verified
 
 - Android 12 / API 31 compatibility on Sony KD-50X85K.
@@ -42,7 +47,7 @@ Version numbering will be introduced when application builds become available.
 
 ### Notes
 
-- Holodeck and DS9 are functional. Sport and Free-to-Air remain placeholders.
+- All four primary destinations are functional.
 - HDMI switching from FalCor via localhost is verified. Credential persistence is verified following application restart.
 - Native HOME replacement and recovery remain untested.
 - Debug APKs are available; no release has been published.

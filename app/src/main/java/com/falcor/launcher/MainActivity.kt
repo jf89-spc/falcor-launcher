@@ -3,6 +3,7 @@ package com.falcor.launcher
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -19,6 +20,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,7 +61,8 @@ private data class Destination(
     val width: Int,
     val height: Int,
     val launchPackage: String? = null,
-    val hdmiPort: Int? = null
+    val hdmiPort: Int? = null,
+    val collection: AppCollection? = null
 )
 
 private val destinations = listOf(
@@ -68,8 +71,14 @@ private val destinations = listOf(
         launchPackage = "org.jellyfin.androidtv"
     ),
     Destination("DS9", 490, 693, 344, 137, hdmiPort = 2),
-    Destination("Sport", 862, 693, 341, 137),
-    Destination("Free-to-Air", 1232, 693, 356, 137)
+    Destination(
+        "Sport", 862, 693, 341, 137,
+        collection = AppCollection.SPORT
+    ),
+    Destination(
+        "Free-to-Air", 1232, 693, 356, 137,
+        collection = AppCollection.FREE_TO_AIR
+    )
 )
 
 class MainActivity : ComponentActivity() {
@@ -98,10 +107,24 @@ private fun FalCorHome(onHdmiSelect: (Int) -> Unit) {
         R.drawable.falcor_concept
     )
 
+    var activeCollection by rememberSaveable {
+        mutableStateOf<String?>(null)
+    }
+
+    var homeFocusIndex by rememberSaveable {
+        mutableStateOf(0)
+    }
+
     val firstFocus = remember { FocusRequester() }
 
-    LaunchedEffect(Unit) {
-        firstFocus.requestFocus()
+    BackHandler(enabled = activeCollection != null) {
+        activeCollection = null
+    }
+
+    LaunchedEffect(activeCollection, homeFocusIndex) {
+        if (activeCollection == null) {
+            firstFocus.requestFocus()
+        }
     }
 
     val clockFormat = remember {
@@ -179,54 +202,79 @@ private fun FalCorHome(onHdmiSelect: (Int) -> Unit) {
         }
 
         // Native, independently focusable destination cards.
-        destinations.forEachIndexed { index, destination ->
+        if (activeCollection == null) {
+            destinations.forEachIndexed { index, destination ->
 
-            val modifier = Modifier
-                .offset(
-                    x = screenWidth *
-                        (destination.x / DESIGN_WIDTH),
-                    y = screenHeight *
-                        (destination.y / DESIGN_HEIGHT)
-                )
-                .size(
-                    width = screenWidth *
-                        (destination.width / DESIGN_WIDTH),
-                    height = screenHeight *
-                        (destination.height / DESIGN_HEIGHT)
-                )
-                .then(
-                    if (index == 0) {
-                        Modifier.focusRequester(firstFocus)
-                    } else {
-                        Modifier
-                    }
-                )
+                val modifier = Modifier
+                    .offset(
+                        x = screenWidth *
+                            (destination.x / DESIGN_WIDTH),
+                        y = screenHeight *
+                            (destination.y / DESIGN_HEIGHT)
+                    )
+                    .size(
+                        width = screenWidth *
+                            (destination.width / DESIGN_WIDTH),
+                        height = screenHeight *
+                            (destination.height / DESIGN_HEIGHT)
+                    )
+                    .then(
+                        if (index == homeFocusIndex) {
+                            Modifier.focusRequester(firstFocus)
+                        } else {
+                            Modifier
+                        }
+                    )
 
-            DestinationCard(
-                destination = destination,
-                artwork = artwork,
-                modifier = modifier,
-                onClick = {
-                    val packageName = destination.launchPackage
+                DestinationCard(
+                    destination = destination,
+                    artwork = artwork,
+                    modifier = modifier,
+                    onLongClick = destination.collection?.let { collection ->
+                        {
+                            CollectionManager(context, collection).show()
+                        }
+                    },
+                    onClick = {
+                        val packageName = destination.launchPackage
 
-                    if (packageName != null) {
-                        if (!launchTvApp(context, packageName)) {
+                        if (packageName != null) {
+                            if (!launchTvApp(context, packageName)) {
+                                Toast.makeText(
+                                    context,
+                                    "${destination.label} is unavailable",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        } else if (destination.hdmiPort != null) {
+                            onHdmiSelect(destination.hdmiPort)
+                        } else if (destination.collection != null) {
+                            homeFocusIndex = index
+                            activeCollection = destination.collection.name
+                        } else {
                             Toast.makeText(
                                 context,
-                                "${destination.label} is unavailable",
+                                "${destination.label} selected",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
-                    } else if (destination.hdmiPort != null) {
-                        onHdmiSelect(destination.hdmiPort)
-                    } else {
-                        Toast.makeText(
-                            context,
-                            "${destination.label} selected",
-                            Toast.LENGTH_SHORT
-                        ).show()
                     }
-                }
+                )
+            }
+        } else {
+            FalCorAppMenu(
+                collection = AppCollection.valueOf(
+                    requireNotNull(activeCollection)
+                ),
+                modifier = Modifier
+                    .offset(
+                        x = screenWidth * (118f / DESIGN_WIDTH),
+                        y = screenHeight * 0.685f
+                    )
+                    .size(
+                        width = screenWidth * (1470f / DESIGN_WIDTH),
+                        height = screenHeight * 0.205f
+                    )
             )
         }
     }
@@ -237,6 +285,7 @@ private fun DestinationCard(
     destination: Destination,
     artwork: ImageBitmap,
     modifier: Modifier = Modifier,
+    onLongClick: (() -> Unit)? = null,
     onClick: () -> Unit
 ) {
     val shape = RoundedCornerShape(16.dp)
@@ -269,6 +318,7 @@ private fun DestinationCard(
 
     Button(
         onClick = onClick,
+        onLongClick = onLongClick,
         modifier = modifier,
         contentPadding = PaddingValues(0.dp),
         shape = ButtonDefaults.shape(
