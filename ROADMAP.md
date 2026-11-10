@@ -118,3 +118,20 @@ Record significant completed changes in `CHANGELOG.md`.
 - [ ] Improve application picker presentation with app artwork and icons.
 - [ ] Unify collection management, credential configuration and maintenance styling.
 - [ ] Verify D-pad navigation and focus restoration throughout the maintenance interface.
+
+## Visual Refinement
+
+- [x] Separate background artwork from interactive UI.
+- [x] Reduce home card size and improve spacing.
+- [x] Establish Orbitron typography and card styling.
+- [ ] Apply home design language to application submenus.
+- [ ] Replace native maintenance dialogs with custom FalCor UI.
+- [ ] Refine application artwork and navigation transitions.
+
+## Screensaver
+
+- [ ] Design a custom FalCor cinematic screensaver.
+- [ ] Investigate native Android TV screensaver integration.
+- [ ] Match the screensaver to the approved FalCor artwork
+      and Orbitron typography.
+- [ ] Verify idle activation, remote wake and standby behaviour.

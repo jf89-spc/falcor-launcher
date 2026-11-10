@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_service_name">FalCor HOME interception</string>
+    <string name="home_service_description">Handles the HOME button and opens FalCor. Does not read application content or collect user data. Disable this service to restore normal Google TV navigation.</string>
+</resources>

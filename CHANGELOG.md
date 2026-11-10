@@ -70,3 +70,13 @@ Version numbering will be introduced when application builds become available.
 - HOME resets collection navigation to the main screen.
 - Retained existing BACK navigation and focus restoration.
 - Configured singleTask activity launch mode.
+
+## Visual Refresh v2
+
+- Separated cinematic background and destination artwork.
+- Added resolution-aware HD and 4K background assets.
+- Rebuilt title, clock, settings control and LCARS accents.
+- Reduced home card dimensions and widened destination spacing.
+- Bundled Orbitron typography with its open font licence.
+- Refined card lighting, gradients, text shadows and focus effects.
+- Reduced destination label sizes.
