@@ -24,6 +24,10 @@ Version numbering will be introduced when application builds become available.
 - Added Holodeck application launching.
 - Added Sony REST HDMI switching adapter with temporary PSK entry.
 
+- Added cinematic home interface using the approved FalCor artwork.
+- Added Holodeck application launching.
+- Added Sony REST HDMI switching adapter with temporary PSK entry.
+
 ### Verified
 
 - Android 12 / API 31 compatibility on Sony KD-50X85K.
