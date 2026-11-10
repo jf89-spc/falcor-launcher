@@ -55,7 +55,7 @@ FalCor builds and runs on the Sony KD-50X85K. Initial D-pad navigation and selec
 - [x] Store Sony PSK securely and enable single-press DS9 switching.
 - [ ] Verify stored Sony credentials survive television reboot.
 - [ ] Test credential replacement following authentication failure.
-- [ ] Add credential configuration and reset to the maintenance interface.
+- [x] Add credential configuration and reset to the maintenance interface.
 - [x] Handle missing or unavailable applications gracefully.
 
 ## Completed — Configurable Application Collections
@@ -81,7 +81,7 @@ FalCor builds and runs on the Sony KD-50X85K. Initial D-pad navigation and selec
 
 ## Planned — System Integration
 
-- [ ] Implement a hidden settings and maintenance interface.
+- [x] Implement central settings and maintenance interface.
 - [ ] Verify Back, Home and remote shortcut behaviour.
 - [ ] Integrate with the Android TV launcher mechanism where supported.
 - [ ] Preserve access to standard Android TV settings and functions.
@@ -109,3 +109,12 @@ Complete one logical change at a time.
 Features remain planned until implemented. They remain unverified until tested on the target device.
 
 Record significant completed changes in `CHANGELOG.md`.
+
+## Planned — Maintenance Interface Refinements
+
+- [ ] Replace native Android dialogs with custom cinematic Compose for TV menus.
+- [ ] Apply consistent FalCor typography, colours, spacing and amber focus indicators.
+- [ ] Refine settings gear focus styling without obscuring the icon.
+- [ ] Improve application picker presentation with app artwork and icons.
+- [ ] Unify collection management, credential configuration and maintenance styling.
+- [ ] Verify D-pad navigation and focus restoration throughout the maintenance interface.

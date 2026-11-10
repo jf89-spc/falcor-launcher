@@ -81,6 +81,14 @@ internal class SonyPskStore(context: Context) {
         return cipher.doFinal(encrypted).toString(Charsets.UTF_8)
     }
 
+    fun clear() {
+        file.delete()
+
+        check(!file.baseFile.exists()) {
+            "Unable to remove saved Sony credential"
+        }
+    }
+
     fun save(psk: String) {
         val cipher = Cipher.getInstance("AES/GCM/NoPadding")
         cipher.init(Cipher.ENCRYPT_MODE, encryptionKey())

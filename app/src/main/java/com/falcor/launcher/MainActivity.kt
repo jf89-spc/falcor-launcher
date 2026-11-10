@@ -26,6 +26,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
@@ -34,6 +36,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -92,16 +96,24 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MaterialTheme {
-                FalCorHome { port ->
-                    hdmiController.select(port)
-                }
+                FalCorHome(
+                    onHdmiSelect = { port ->
+                        hdmiController.select(port)
+                    },
+                    onSonySettings = { onBack ->
+                        hdmiController.showSettings(2, onBack)
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-private fun FalCorHome(onHdmiSelect: (Int) -> Unit) {
+private fun FalCorHome(
+    onHdmiSelect: (Int) -> Unit,
+    onSonySettings: (() -> Unit) -> Unit
+) {
     val context = LocalContext.current
     val artwork = ImageBitmap.imageResource(
         R.drawable.falcor_concept
@@ -115,7 +127,15 @@ private fun FalCorHome(onHdmiSelect: (Int) -> Unit) {
         mutableStateOf(0)
     }
 
-    val firstFocus = remember { FocusRequester() }
+    val homeFocusRequesters = remember {
+        List(destinations.size) { FocusRequester() }
+    }
+
+    val settingsFocus = remember { FocusRequester() }
+
+    var lastFocusedHomeIndex by rememberSaveable {
+        mutableStateOf(0)
+    }
 
     BackHandler(enabled = activeCollection != null) {
         activeCollection = null
@@ -123,7 +143,7 @@ private fun FalCorHome(onHdmiSelect: (Int) -> Unit) {
 
     LaunchedEffect(activeCollection, homeFocusIndex) {
         if (activeCollection == null) {
-            firstFocus.requestFocus()
+            homeFocusRequesters[homeFocusIndex].requestFocus()
         }
     }
 
@@ -203,6 +223,61 @@ private fun FalCorHome(onHdmiSelect: (Int) -> Unit) {
 
         // Native, independently focusable destination cards.
         if (activeCollection == null) {
+
+            // Interactive overlay for the settings gear
+            // embedded in the approved concept artwork.
+            val gearShape = RoundedCornerShape(10.dp)
+
+            Button(
+                onClick = { showMaintenanceMenu(context, onSonySettings) },
+                modifier = Modifier
+                    .offset(
+                        x = screenWidth * (1574f / DESIGN_WIDTH),
+                        y = screenHeight * (18f / DESIGN_HEIGHT)
+                    )
+                    .size(
+                        width = screenWidth * (70f / DESIGN_WIDTH),
+                        height = screenHeight * (70f / DESIGN_HEIGHT)
+                    )
+                    .focusRequester(settingsFocus)
+                    .focusProperties {
+                        down = homeFocusRequesters[lastFocusedHomeIndex]
+                    }
+                    .semantics {
+                        contentDescription = "Maintenance"
+                    },
+                contentPadding = PaddingValues(0.dp),
+                shape = ButtonDefaults.shape(shape = gearShape),
+                colors = ButtonDefaults.colors(
+                    containerColor = Color.Transparent,
+                    focusedContainerColor = Color.Transparent,
+                    pressedContainerColor = Color.Transparent
+                ),
+                scale = ButtonDefaults.scale(
+                    focusedScale = 1f,
+                    pressedScale = 1f
+                ),
+                border = ButtonDefaults.border(
+                    border = Border(
+                        border = BorderStroke(
+                            1.dp,
+                            Color.Transparent
+                        ),
+                        shape = gearShape
+                    ),
+                    focusedBorder = Border(
+                        border = BorderStroke(2.dp, Amber),
+                        shape = gearShape
+                    )
+                ),
+                glow = ButtonDefaults.glow(
+                    glow = Glow.None,
+                    focusedGlow = Glow.None
+                )
+            ) {
+                Box(modifier = Modifier.fillMaxSize())
+            }
+
             destinations.forEachIndexed { index, destination ->
 
                 val modifier = Modifier
@@ -218,13 +293,15 @@ private fun FalCorHome(onHdmiSelect: (Int) -> Unit) {
                         height = screenHeight *
                             (destination.height / DESIGN_HEIGHT)
                     )
-                    .then(
-                        if (index == homeFocusIndex) {
-                            Modifier.focusRequester(firstFocus)
-                        } else {
-                            Modifier
+                    .focusRequester(homeFocusRequesters[index])
+                    .focusProperties {
+                        up = settingsFocus
+                    }
+                    .onFocusChanged {
+                        if (it.isFocused) {
+                            lastFocusedHomeIndex = index
                         }
-                    )
+                    }
 
                 DestinationCard(
                     destination = destination,

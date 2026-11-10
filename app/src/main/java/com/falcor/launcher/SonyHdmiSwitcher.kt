@@ -146,6 +146,96 @@ internal class SonyHdmiController(
         }
     }
 
+    fun showSettings(
+        port: Int,
+        onBack: () -> Unit
+    ) {
+        if (busy || activity.isFinishing || activity.isDestroyed) {
+            return
+        }
+
+        val returnToSettings = {
+            showSettings(port, onBack)
+        }
+
+        AlertDialog.Builder(
+            activity,
+            R.style.Theme_FalCor_MaintenanceDialog
+        )
+            .setTitle("Sony HDMI settings")
+            .setItems(
+                arrayOf(
+                    "Configure or replace PSK",
+                    "Clear saved PSK"
+                )
+            ) { _, index ->
+                when (index) {
+                    0 -> {
+                        busy = true
+
+                        showSetup(
+                            port,
+                            "Enter the Sony PSK. FalCor will switch to DS9 "
+                                + "to verify it before saving.",
+                            onCancel = returnToSettings
+                        )
+                    }
+
+                    1 -> confirmClear(returnToSettings)
+                }
+            }
+            .setNegativeButton("Back") { _, _ ->
+                onBack()
+            }
+            .setOnCancelListener {
+                onBack()
+            }
+            .show()
+    }
+
+    private fun confirmClear(onBack: () -> Unit) {
+        AlertDialog.Builder(
+            activity,
+            R.style.Theme_FalCor_MaintenanceDialog
+        )
+            .setTitle("Clear saved Sony PSK?")
+            .setMessage(
+                "DS9 will require the Sony PSK the next time "
+                    + "you select it. This does not change the "
+                    + "pre-shared key configured on the television."
+            )
+            .setNegativeButton("Cancel") { _, _ ->
+                onBack()
+            }
+            .setPositiveButton("Clear") { _, _ ->
+                busy = true
+
+                activity.lifecycleScope.launch {
+                    try {
+                        val result = withContext(Dispatchers.IO) {
+                            runCatching { store.clear() }
+                        }
+
+                        if (result.isSuccess) {
+                            notifyUser("Saved Sony credential cleared")
+                        } else {
+                            notifyUser("Unable to clear saved credential")
+                        }
+                    } finally {
+                        busy = false
+                    }
+
+                    if (!activity.isFinishing && !activity.isDestroyed) {
+                        onBack()
+                    }
+                }
+            }
+            .setOnCancelListener {
+                onBack()
+            }
+            .show()
+    }
+
     private fun isAuthenticationError(error: String?): Boolean {
         return error == "Sony REST API returned HTTP 403" ||
             error == "Sony REST API returned HTTP 401" ||
@@ -161,7 +251,11 @@ internal class SonyHdmiController(
         ).show()
     }
 
-    private fun showSetup(port: Int, message: String) {
+    private fun showSetup(
+        port: Int,
+        message: String,
+        onCancel: (() -> Unit)? = null
+    ) {
         if (activity.isFinishing || activity.isDestroyed) {
             busy = false
             return
@@ -179,7 +273,10 @@ internal class SonyHdmiController(
 
         var submitted = false
 
-        val dialog = AlertDialog.Builder(activity)
+        val dialog = AlertDialog.Builder(
+            activity,
+            R.style.Theme_FalCor_MaintenanceDialog
+        )
             .setTitle("Configure DS9")
             .setMessage(message)
             .setView(input)
@@ -226,6 +323,10 @@ internal class SonyHdmiController(
 
             if (!submitted) {
                 busy = false
+
+                if (!activity.isFinishing && !activity.isDestroyed) {
+                    onCancel?.invoke()
+                }
             }
         }
 

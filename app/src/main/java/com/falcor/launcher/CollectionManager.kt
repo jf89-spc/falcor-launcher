@@ -5,7 +5,8 @@ import android.content.Context
 
 internal class CollectionManager(
     private val context: Context,
-    private val collection: AppCollection
+    private val collection: AppCollection,
+    private val onClose: (() -> Unit)? = null
 ) {
     private val store = AppCollectionStore(context)
     private val catalog = AppCatalog(context)
@@ -35,7 +36,7 @@ internal class CollectionManager(
             actions.add(label to { showEntry(entry) })
         }
 
-        showList(title, actions)
+        showList(title, actions, onBack = onClose)
     }
 
     private fun showPicker() {
@@ -49,7 +50,7 @@ internal class CollectionManager(
         }
 
         if (available.isEmpty()) {
-            AlertDialog.Builder(context)
+            AlertDialog.Builder(context, R.style.Theme_FalCor_MaintenanceDialog)
                 .setTitle("Add application")
                 .setMessage("No additional TV applications found.")
                 .setPositiveButton("Back") { _, _ -> show() }
@@ -154,7 +155,7 @@ internal class CollectionManager(
         actions: List<Pair<String, () -> Unit>>,
         onBack: (() -> Unit)? = null
     ) {
-        val builder = AlertDialog.Builder(context)
+        val builder = AlertDialog.Builder(context, R.style.Theme_FalCor_MaintenanceDialog)
             .setTitle(title)
             .setItems(
                 actions.map { it.first }.toTypedArray()

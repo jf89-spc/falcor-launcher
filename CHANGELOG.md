@@ -35,6 +35,11 @@ Version numbering will be introduced when application builds become available.
 - Added application pickers and collection management.
 - Added long-press application management for reordering and removal.
 
+- Added functional settings gear with D-pad navigation.
+- Added central maintenance menu with collection management and Android TV settings.
+- Applied dark FalCor styling to maintenance and collection dialogs.
+- Added Sony PSK configuration, replacement and reset controls.
+
 ### Verified
 
 - Android 12 / API 31 compatibility on Sony KD-50X85K.

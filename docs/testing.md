@@ -146,3 +146,22 @@ Date: 2026-11-10
 - Focus restoration in large scrolling collections requires further testing.
 - Central maintenance interface remains pending.
 - Instrumentation test cleanup and credential preservation require investigation.
+
+## Test 006 — Central Maintenance Interface
+
+Date: 2026-11-10
+
+### Results
+
+- PASS — Settings gear accessible using D-pad UP.
+- PASS — Central maintenance and collection management operate correctly.
+- PASS — Dark maintenance theme renders on Sony KD-50X85K.
+- PASS — Sony PSK configuration and clearing.
+- PASS — DS9 single-press switching after credential configuration.
+
+### Outstanding Work
+
+- Custom cinematic maintenance interface deferred.
+- Credential persistence following television reboot remains untested.
+- Automatic credential replacement following authentication failure remains untested.
+- Native HOME replacement and recovery remain untested.
