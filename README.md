@@ -13,7 +13,7 @@ It provides a cinematic, remote-friendly interface to the existing home entertai
 
 FalCor builds and runs on the Sony KD-50X85K. Four focusable destinations and remote navigation have been tested successfully.
 
-Sony REST API HDMI switching has been verified from Voyager. HDMI switching from FalCor and native HOME replacement remain untested.
+Sony REST API HDMI switching has been verified from Voyager. Holodeck application launching and HDMI switching from FalCor are verified. Native HOME replacement remains untested.
 
 ## Design
 

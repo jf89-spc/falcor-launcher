@@ -67,3 +67,21 @@ Date: 2026-11-10
 - Destinations are placeholders without launch actions.
 - Visual styling is provisional.
 - Native HOME replacement has not been tested.
+
+## Test 003 — Holodeck and DS9 Integration
+
+Date: 2026-11-10
+
+### Results
+
+- PASS — Holodeck launches the installed Jellyfin Android TV client.
+- PASS — HOME and BACK from Jellyfin return to Projectivy.
+- PASS — DS9 displays a PSK entry dialog.
+- PASS — Authenticated Sony REST request switches to HDMI 2.
+- PASS — Sony REST API accessible from FalCor via localhost.
+
+### Limitations
+
+- DS9 requires manual PSK entry for each switch.
+- Secure persistent credential storage remains pending.
+- FalCor is not yet the default HOME launcher.

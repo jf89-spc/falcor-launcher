@@ -57,12 +57,17 @@ private data class Destination(
     val x: Int,
     val y: Int,
     val width: Int,
-    val height: Int
+    val height: Int,
+    val launchPackage: String? = null,
+    val hdmiPort: Int? = null
 )
 
 private val destinations = listOf(
-    Destination("Holodeck", 118, 693, 344, 137),
-    Destination("DS9", 490, 693, 344, 137),
+    Destination(
+        "Holodeck", 118, 693, 344, 137,
+        launchPackage = "org.jellyfin.androidtv"
+    ),
+    Destination("DS9", 490, 693, 344, 137, hdmiPort = 2),
     Destination("Sport", 862, 693, 341, 137),
     Destination("Free-to-Air", 1232, 693, 356, 137)
 )
@@ -73,14 +78,16 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MaterialTheme {
-                FalCorHome()
+                FalCorHome { port ->
+                    showSonyHdmiTest(this, port)
+                }
             }
         }
     }
 }
 
 @Composable
-private fun FalCorHome() {
+private fun FalCorHome(onHdmiSelect: (Int) -> Unit) {
     val context = LocalContext.current
     val artwork = ImageBitmap.imageResource(
         R.drawable.falcor_concept
@@ -195,11 +202,25 @@ private fun FalCorHome() {
                 artwork = artwork,
                 modifier = modifier,
                 onClick = {
-                    Toast.makeText(
-                        context,
-                        "${destination.label} selected",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    val packageName = destination.launchPackage
+
+                    if (packageName != null) {
+                        if (!launchTvApp(context, packageName)) {
+                            Toast.makeText(
+                                context,
+                                "${destination.label} is unavailable",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    } else if (destination.hdmiPort != null) {
+                        onHdmiSelect(destination.hdmiPort)
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "${destination.label} selected",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
             )
         }

@@ -93,7 +93,7 @@ Successfully switched from Projectivy to DS9 using an authenticated HTTP request
 
 ### Outstanding Verification
 
-- Confirm an Android application running on the television can access the Sony REST API.
+- Verified: FalCor can access the Sony REST API via `127.0.0.1` and switch to HDMI 2 using PSK authentication.
 - Determine secure storage and configuration of the PSK.
 - Verify input switching remains functional following television restart.
 - Implement a replaceable Sony HDMI switching adapter.

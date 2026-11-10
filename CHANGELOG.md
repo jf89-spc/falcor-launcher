@@ -20,6 +20,10 @@ Version numbering will be introduced when application builds become available.
 - Integrated Compose for TV with four focusable destination buttons.
 - Added initial Sony compatibility and device testing documentation.
 
+- Added cinematic home interface using the approved FalCor artwork.
+- Added Holodeck application launching.
+- Added Sony REST HDMI switching adapter with temporary PSK entry.
+
 ### Verified
 
 - Android 12 / API 31 compatibility on Sony KD-50X85K.
@@ -32,7 +36,7 @@ Version numbering will be introduced when application builds become available.
 
 ### Notes
 
-- Four destinations are currently non-functional placeholders.
-- HDMI switching from within FalCor remains untested.
+- Holodeck and DS9 are functional. Sport and Free-to-Air remain placeholders.
+- HDMI switching from FalCor via localhost is verified. Persistent credential storage remains pending.
 - Native HOME replacement and recovery remain untested.
 - Debug APKs are available; no release has been published.
