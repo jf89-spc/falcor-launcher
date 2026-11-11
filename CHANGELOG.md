@@ -104,3 +104,11 @@ Version numbering will be introduced when application builds become available.
 - Reused existing Android TV application discovery and launching.
 - Added alphabetical application browsing with D-pad navigation.
 - Preserved BACK navigation to Maintenance and HOME navigation to FalCor.
+
+## Screensaver Integration
+
+- Selected Jellyfin's native Android TV screensaver.
+- Verified automatic activation during television idle.
+- Removed the experimental FalCor photo screensaver.
+- Retained the existing WallPanel image service for Cerritos.
+- Corrected the Android TV banner declaration in the manifest.

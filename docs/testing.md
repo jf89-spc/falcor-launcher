@@ -196,3 +196,13 @@ Date: 2026-11-11
 - PASS — D-pad navigation and list scrolling.
 - PASS — BACK returns to Maintenance.
 - PASS — HOME returns to FalCor.
+
+## Test 011 — Jellyfin Screensaver
+
+Date: 2026-11-12
+
+- PASS — Jellyfin DreamService registered.
+- PASS — Jellyfin selected as the system screensaver.
+- PASS — Automatic idle activation confirmed.
+- PASS — Experimental FalCor DreamService removed.
+- Existing native FalCor HOME configuration preserved.

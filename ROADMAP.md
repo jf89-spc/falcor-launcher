@@ -135,3 +135,15 @@ Record significant completed changes in `CHANGELOG.md`.
 - [ ] Match the screensaver to the approved FalCor artwork
       and Orbitron typography.
 - [ ] Verify idle activation, remote wake and standby behaviour.
+
+## Screensaver Decision — Complete
+
+- [x] Verify Android TV DreamService compatibility.
+- [x] Evaluate local WallPanel photo integration.
+- [x] Test Jellyfin's native screensaver.
+- [x] Select Jellyfin for automatic idle activation.
+- [x] Remove the experimental FalCor DreamService.
+
+Custom FalCor screensaver development is deferred indefinitely.
+Jellyfin provides the required functionality without additional
+maintenance. Revisit only if requirements change.
