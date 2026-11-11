@@ -80,3 +80,11 @@ Version numbering will be introduced when application builds become available.
 - Bundled Orbitron typography with its open font licence.
 - Refined card lighting, gradients, text shadows and focus effects.
 - Reduced destination label sizes.
+
+## Submenu Visual Refresh
+
+- Applied the approved FalCor styling to Sport and Free-to-Air.
+- Reduced application card dimensions and improved spacing.
+- Added Orbitron headings and refined label typography.
+- Added layered card surfaces and amber focus effects.
+- Retained configurable application collections.

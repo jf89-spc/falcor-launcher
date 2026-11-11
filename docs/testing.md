@@ -177,3 +177,11 @@ Date: 2026-11-11
 
 FalCor uses singleTask launch mode to reuse its existing
 activity. Accessibility interception remains disabled.
+
+## Test 009 — Submenu Visual Refresh
+
+Date: 2026-11-11
+
+- PASS — Sport and Free-to-Air visual layout approved.
+- Existing application discovery, ordering and navigation logic retained.
+- Full interaction regression testing remains outstanding.

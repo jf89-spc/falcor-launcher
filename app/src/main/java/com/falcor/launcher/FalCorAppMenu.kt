@@ -3,6 +3,10 @@ package com.falcor.launcher
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -28,8 +32,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -40,6 +51,8 @@ import androidx.tv.material3.Button
 import androidx.tv.material3.ButtonDefaults
 import androidx.tv.material3.Glow
 import androidx.tv.material3.Text
+
+private val MenuFont = FontFamily(Font(R.font.orbitron))
 
 @Composable
 internal fun FalCorAppMenu(
@@ -109,23 +122,34 @@ internal fun FalCorAppMenu(
             Text(
                 text = title,
                 color = Color(0xFFFFBD59),
-                fontSize = 18.sp
+                fontSize = 16.sp,
+                fontFamily = MenuFont,
+                fontWeight = FontWeight.SemiBold,
+                letterSpacing = 1.sp,
+                style = TextStyle(
+                    shadow = Shadow(
+                        color = Color(0xB3000000),
+                        offset = Offset(0f, 2f),
+                        blurRadius = 5f
+                    )
+                )
             )
 
             Text(
-                text = "BACK  /  FALCOR HOME",
+                text = "BACK  /  HOME",
                 color = Color(0xFF9AB4C7),
-                fontSize = 11.sp
+                fontSize = 10.sp,
+                letterSpacing = 0.6.sp
             )
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(6.dp))
 
         if (entries.isEmpty()) {
             Text(
                 text = "No applications configured",
                 color = Color(0xFF9AB4C7),
-                fontSize = 15.sp
+                fontSize = 12.sp
             )
         } else {
             LazyRow(
@@ -134,10 +158,14 @@ internal fun FalCorAppMenu(
                     .fillMaxWidth()
                     .weight(1f),
                 contentPadding = PaddingValues(
-                    horizontal = 6.dp,
-                    vertical = 6.dp
+                    horizontal = 8.dp,
+                    vertical = 5.dp
                 ),
-                horizontalArrangement = Arrangement.spacedBy(14.dp)
+                horizontalArrangement = if (entries.size <= 5) {
+                    Arrangement.SpaceEvenly
+                } else {
+                    Arrangement.spacedBy(12.dp)
+                }
             ) {
                 itemsIndexed(
                     items = entries,
@@ -160,7 +188,7 @@ internal fun FalCorAppMenu(
                         entry = entry,
                         available = available,
                         modifier = Modifier
-                            .width(150.dp)
+                            .width(116.dp)
                             .fillMaxHeight()
                             .then(
                                 if (entry.packageName == focusPackage) {
@@ -234,38 +262,30 @@ private fun CollectionAppCard(
         }
     }
 
-    val shape = RoundedCornerShape(14.dp)
+    val shape = RoundedCornerShape(12.dp)
 
     Button(
         onClick = onClick,
         onLongClick = onLongClick,
         modifier = modifier,
-        contentPadding = PaddingValues(8.dp),
-        shape = ButtonDefaults.shape(
-            shape = shape
-        ),
+        contentPadding = PaddingValues(0.dp),
+        shape = ButtonDefaults.shape(shape = shape),
         colors = ButtonDefaults.colors(
-            containerColor = Color(0xFF091C2B),
-            focusedContainerColor = Color(0xFF26301F),
-            pressedContainerColor = Color(0xFF3D3827)
+            containerColor = Color.Transparent,
+            focusedContainerColor = Color.Transparent,
+            pressedContainerColor = Color.Transparent
         ),
         scale = ButtonDefaults.scale(
-            focusedScale = 1f,
+            focusedScale = 1.025f,
             pressedScale = 0.98f
         ),
         border = ButtonDefaults.border(
             border = Border(
-                border = BorderStroke(
-                    1.dp,
-                    Color(0xFF285C80)
-                ),
+                border = BorderStroke(1.dp, Color(0xFF42647D)),
                 shape = shape
             ),
             focusedBorder = Border(
-                border = BorderStroke(
-                    2.dp,
-                    Color(0xFFFFBD59)
-                ),
+                border = BorderStroke(2.dp, Color(0xFFFFBD59)),
                 shape = shape
             )
         ),
@@ -273,40 +293,72 @@ private fun CollectionAppCard(
             glow = Glow.None,
             focusedGlow = Glow(
                 elevationColor = Color(0xFFFFBD59),
-                elevation = 10.dp
+                elevation = 8.dp
             )
         )
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            if (icon != null) {
-                Image(
-                    bitmap = icon,
-                    contentDescription = null,
-                    modifier = Modifier.size(30.dp)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        0.00f to Color(0xFF1A3449),
+                        0.12f to Color(0xFF11283A),
+                        0.62f to Color(0xFF091A2A),
+                        1.00f to Color(0xFF040C15)
+                    )
                 )
-
-                Spacer(modifier = Modifier.height(4.dp))
-            }
-
-            Text(
-                text = entry.label,
-                color = Color.White,
-                fontSize = 14.sp,
-                textAlign = TextAlign.Center,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
+        ) {
+            // Thin reflected edge, matching the home card treatment.
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(Color(0x667EB8D7))
             )
 
-            if (!available) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 7.dp, vertical = 5.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                if (icon != null) {
+                    Image(
+                        bitmap = icon,
+                        contentDescription = null,
+                        modifier = Modifier.size(34.dp)
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
+
                 Text(
-                    text = "Unavailable",
-                    color = Color(0xFF9AB4C7),
-                    fontSize = 10.sp
+                    text = entry.label,
+                    color = Color(0xFFF1F0E9),
+                    fontFamily = MenuFont,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 11.sp,
+                    letterSpacing = 0.2.sp,
+                    textAlign = TextAlign.Center,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    style = TextStyle(
+                        shadow = Shadow(
+                            color = Color.Black,
+                            offset = Offset(0f, 2f),
+                            blurRadius = 5f
+                        )
+                    )
                 )
+
+                if (!available) {
+                    Text(
+                        text = "Unavailable",
+                        color = Color(0xFF9AB4C7),
+                        fontSize = 9.sp
+                    )
+                }
             }
         }
     }
