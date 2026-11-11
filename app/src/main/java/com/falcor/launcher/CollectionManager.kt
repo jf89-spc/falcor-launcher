@@ -1,6 +1,5 @@
 package com.falcor.launcher
 
-import android.app.AlertDialog
 import android.content.Context
 
 internal class CollectionManager(
@@ -50,12 +49,13 @@ internal class CollectionManager(
         }
 
         if (available.isEmpty()) {
-            AlertDialog.Builder(context, R.style.Theme_FalCor_MaintenanceDialog)
-                .setTitle("Add application")
-                .setMessage("No additional TV applications found.")
-                .setPositiveButton("Back") { _, _ -> show() }
-                .setOnCancelListener { show() }
-                .show()
+            FalCorMenuDialog.show(
+                context = context,
+                title = "ADD APPLICATION",
+                actions = emptyList(),
+                onBack = { show() },
+                message = "No additional TV applications found."
+            )
 
             return
         }
@@ -155,25 +155,12 @@ internal class CollectionManager(
         actions: List<Pair<String, () -> Unit>>,
         onBack: (() -> Unit)? = null
     ) {
-        val builder = AlertDialog.Builder(context, R.style.Theme_FalCor_MaintenanceDialog)
-            .setTitle(title)
-            .setItems(
-                actions.map { it.first }.toTypedArray()
-            ) { _, index ->
-                actions[index].second.invoke()
-            }
-            .setNegativeButton(
-                if (onBack == null) "Close" else "Back"
-            ) { _, _ ->
-                onBack?.invoke()
-            }
-
-        if (onBack != null) {
-            builder.setOnCancelListener {
-                onBack.invoke()
-            }
-        }
-
-        builder.show()
+        FalCorMenuDialog.show(
+            context = context,
+            title = title.uppercase(),
+            actions = actions,
+            onBack = onBack,
+            subtitle = "FALCOR / COLLECTIONS"
+        )
     }
 }

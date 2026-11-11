@@ -1,10 +1,5 @@
 package com.falcor.launcher
 
-import android.app.AlertDialog
-import android.text.InputType
-import android.view.View
-import android.view.inputmethod.EditorInfo
-import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.lifecycleScope
@@ -154,86 +149,63 @@ internal class SonyHdmiController(
             return
         }
 
-        val returnToSettings = {
-            showSettings(port, onBack)
-        }
+        val returnToSettings = { showSettings(port, onBack) }
 
-        AlertDialog.Builder(
-            activity,
-            R.style.Theme_FalCor_MaintenanceDialog
-        )
-            .setTitle("Sony HDMI settings")
-            .setItems(
-                arrayOf(
-                    "Configure or replace PSK",
-                    "Clear saved PSK"
-                )
-            ) { _, index ->
-                when (index) {
-                    0 -> {
-                        busy = true
-
-                        showSetup(
-                            port,
-                            "Enter the Sony PSK. FalCor will switch to DS9 "
-                                + "to verify it before saving.",
-                            onCancel = returnToSettings
-                        )
-                    }
-
-                    1 -> confirmClear(returnToSettings)
+        FalCorMenuDialog.show(
+            context = activity,
+            title = "Sony HDMI settings",
+            actions = listOf(
+                "Configure or replace PSK" to {
+                    busy = true
+                    showSetup(
+                        port,
+                        "Enter the Sony PSK. FalCor will switch to DS9 " +
+                            "to verify it before saving.",
+                        onCancel = returnToSettings
+                    )
+                },
+                "Clear saved PSK" to {
+                    confirmClear(returnToSettings)
                 }
-            }
-            .setNegativeButton("Back") { _, _ ->
-                onBack()
-            }
-            .setOnCancelListener {
-                onBack()
-            }
-            .show()
+            ),
+            onBack = onBack
+        )
     }
 
     private fun confirmClear(onBack: () -> Unit) {
-        AlertDialog.Builder(
-            activity,
-            R.style.Theme_FalCor_MaintenanceDialog
-        )
-            .setTitle("Clear saved Sony PSK?")
-            .setMessage(
-                "DS9 will require the Sony PSK the next time "
-                    + "you select it. This does not change the "
-                    + "pre-shared key configured on the television."
-            )
-            .setNegativeButton("Cancel") { _, _ ->
-                onBack()
-            }
-            .setPositiveButton("Clear") { _, _ ->
-                busy = true
+        FalCorMenuDialog.show(
+            context = activity,
+            title = "Clear saved Sony PSK?",
+            message = "DS9 will require the Sony PSK the next time " +
+                "you select it. This does not change the " +
+                "pre-shared key configured on the television.",
+            actions = listOf(
+                "CLEAR SAVED PSK" to {
+                    busy = true
 
-                activity.lifecycleScope.launch {
-                    try {
-                        val result = withContext(Dispatchers.IO) {
-                            runCatching { store.clear() }
+                    activity.lifecycleScope.launch {
+                        try {
+                            val result = withContext(Dispatchers.IO) {
+                                runCatching { store.clear() }
+                            }
+
+                            if (result.isSuccess) {
+                                notifyUser("Saved Sony credential cleared")
+                            } else {
+                                notifyUser("Unable to clear saved credential")
+                            }
+                        } finally {
+                            busy = false
                         }
 
-                        if (result.isSuccess) {
-                            notifyUser("Saved Sony credential cleared")
-                        } else {
-                            notifyUser("Unable to clear saved credential")
+                        if (!activity.isFinishing && !activity.isDestroyed) {
+                            onBack()
                         }
-                    } finally {
-                        busy = false
-                    }
-
-                    if (!activity.isFinishing && !activity.isDestroyed) {
-                        onBack()
                     }
                 }
-            }
-            .setOnCancelListener {
-                onBack()
-            }
-            .show()
+            ),
+            onBack = onBack
+        )
     }
 
     private fun isAuthenticationError(error: String?): Boolean {
@@ -261,79 +233,39 @@ internal class SonyHdmiController(
             return
         }
 
-        val input = EditText(activity).apply {
-            hint = "Sony pre-shared key"
-            setSingleLine(true)
-            inputType = InputType.TYPE_CLASS_TEXT or
-                InputType.TYPE_TEXT_VARIATION_PASSWORD
-            imeOptions = EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING
-            importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO
-            isSaveEnabled = false
-        }
-
-        var submitted = false
-
-        val dialog = AlertDialog.Builder(
-            activity,
-            R.style.Theme_FalCor_MaintenanceDialog
-        )
-            .setTitle("Configure DS9")
-            .setMessage(message)
-            .setView(input)
-            .setNegativeButton("Cancel", null)
-            .setPositiveButton("Save and switch") { _, _ ->
-
-                val psk = input.text.toString()
-                input.text.clear()
-
-                if (psk.isBlank()) {
-                    notifyUser("Pre-shared key required")
-                } else {
-                    submitted = true
-
-                    activity.lifecycleScope.launch {
-                        try {
-                            val error = switcher.switchTo(port, psk)
-
-                            if (error != null) {
-                                notifyUser(error)
-                            } else {
-                                val saved = withContext(Dispatchers.IO) {
-                                    runCatching {
-                                        store.save(psk)
-                                    }
-                                }
-
-                                if (saved.isFailure) {
-                                    notifyUser(
-                                        "HDMI switched, but credential could not be saved"
-                                    )
-                                }
-                            }
-                        } finally {
-                            busy = false
-                        }
-                    }
-                }
-            }
-            .create()
-
-        dialog.setOnDismissListener {
-            input.text.clear()
-
-            if (!submitted) {
+        FalCorPasswordDialog.show(
+            context = activity,
+            title = "Configure DS9",
+            message = message,
+            onCancel = {
                 busy = false
-
                 if (!activity.isFinishing && !activity.isDestroyed) {
                     onCancel?.invoke()
                 }
+            },
+            onSubmit = { psk ->
+                activity.lifecycleScope.launch {
+                    try {
+                        val error = switcher.switchTo(port, psk)
+
+                        if (error != null) {
+                            notifyUser(error)
+                        } else {
+                            val saved = withContext(Dispatchers.IO) {
+                                runCatching { store.save(psk) }
+                            }
+
+                            if (saved.isFailure) {
+                                notifyUser(
+                                    "HDMI switched, but credential could not be saved"
+                                )
+                            }
+                        }
+                    } finally {
+                        busy = false
+                    }
+                }
             }
-        }
-
-        dialog.show()
-
-        dialog.window?.addFlags(
-            android.view.WindowManager.LayoutParams.FLAG_SECURE
         )
     }
 }

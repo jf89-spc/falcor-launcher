@@ -88,3 +88,19 @@ Version numbering will be introduced when application builds become available.
 - Added Orbitron headings and refined label typography.
 - Added layered card surfaces and amber focus effects.
 - Retained configurable application collections.
+
+## Maintenance Interface Refresh
+
+- Replaced stock maintenance and collection-management lists with FalCor panels.
+- Applied Orbitron typography, layered navy surfaces and amber focus styling.
+- Restyled Sony HDMI settings, credential confirmation and PSK entry.
+- Reduced maintenance typography for improved proportions.
+- Preserved existing collection management and credential handling.
+
+
+## All Apps
+
+- Added All Apps browser to the maintenance interface.
+- Reused existing Android TV application discovery and launching.
+- Added alphabetical application browsing with D-pad navigation.
+- Preserved BACK navigation to Maintenance and HOME navigation to FalCor.

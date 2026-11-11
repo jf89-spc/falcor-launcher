@@ -185,3 +185,14 @@ Date: 2026-11-11
 - PASS — Sport and Free-to-Air visual layout approved.
 - Existing application discovery, ordering and navigation logic retained.
 - Full interaction regression testing remains outstanding.
+
+## Test 010 — All Apps
+
+Date: 2026-11-11
+
+- PASS — All Apps accessible through Maintenance.
+- PASS — Installed Android TV applications discovered.
+- PASS — Application launching.
+- PASS — D-pad navigation and list scrolling.
+- PASS — BACK returns to Maintenance.
+- PASS — HOME returns to FalCor.

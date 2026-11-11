@@ -125,7 +125,7 @@ Record significant completed changes in `CHANGELOG.md`.
 - [x] Reduce home card size and improve spacing.
 - [x] Establish Orbitron typography and card styling.
 - [x] Apply home design language to application submenus.
-- [ ] Replace native maintenance dialogs with custom FalCor UI.
+- [x] Replace native maintenance dialogs with custom FalCor UI.
 - [ ] Refine application artwork and navigation transitions.
 
 ## Screensaver
