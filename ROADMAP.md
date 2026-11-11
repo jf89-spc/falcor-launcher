@@ -147,3 +147,9 @@ Record significant completed changes in `CHANGELOG.md`.
 Custom FalCor screensaver development is deferred indefinitely.
 Jellyfin provides the required functionality without additional
 maintenance. Revisit only if requirements change.
+
+## Application Reordering
+
+- [x] Direct D-pad application reordering.
+- [x] Save and cancel controls.
+- [ ] Extended scrolling and focus regression tests.

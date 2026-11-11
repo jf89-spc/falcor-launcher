@@ -112,3 +112,11 @@ Version numbering will be introduced when application builds become available.
 - Removed the experimental FalCor photo screensaver.
 - Retained the existing WallPanel image service for Cerritos.
 - Corrected the Android TV banner declaration in the manifest.
+
+## Visual Application Reordering
+
+- Added direct D-pad reordering to Sport and Free-to-Air.
+- Long-press OK enters move mode.
+- LEFT/RIGHT changes application order visually.
+- OK saves; BACK cancels without saving.
+- Preserved application launching and collection storage.

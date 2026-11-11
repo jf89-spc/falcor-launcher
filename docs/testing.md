@@ -206,3 +206,12 @@ Date: 2026-11-12
 - PASS — Automatic idle activation confirmed.
 - PASS — Experimental FalCor DreamService removed.
 - Existing native FalCor HOME configuration preserved.
+
+## Test 012 — Visual Application Reordering
+
+Date: 2026-11-12
+
+- PASS — Direct application reordering tested on Sony KD-50X85K.
+- PASS — Remote interaction reported working.
+- Long-list scrolling and focus regression testing remain
+  to be documented separately.

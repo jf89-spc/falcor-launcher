@@ -1,6 +1,8 @@
 package com.falcor.launcher
 
+import android.view.KeyEvent as AndroidKeyEvent
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -31,6 +33,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Shadow
@@ -98,6 +103,45 @@ internal fun FalCorAppMenu(
         mutableStateOf(-1)
     }
 
+    // Reordering is a preview until OK commits it to AppCollectionStore.
+    // BACK discards the preview and restores the original order.
+    var movingPackage by remember(collection) {
+        mutableStateOf<String?>(null)
+    }
+    var originalOrder by remember(collection) {
+        mutableStateOf<List<AppEntry>?>(null)
+    }
+
+    fun moveSelected(direction: Int) {
+        val selected = movingPackage ?: return
+        val from = entries.indexOfFirst { it.packageName == selected }
+        val to = from + direction
+        if (from !in entries.indices || to !in entries.indices) return
+
+        entries = entries.toMutableList().apply {
+            add(to, removeAt(from))
+        }
+        focusPackage = selected
+        focusRequestId++
+    }
+
+    fun finishReordering(save: Boolean) {
+        if (save) {
+            store.save(collection, entries)
+        } else {
+            originalOrder?.let { entries = it }
+        }
+        movingPackage = null
+        originalOrder = null
+        focusRequestId++
+    }
+
+    // Registered after the parent screen's BACK handler: cancel takes
+    // precedence over leaving the submenu while a move is in progress.
+    BackHandler(enabled = movingPackage != null) {
+        finishReordering(save = false)
+    }
+
     LaunchedEffect(collection, focusRequestId) {
         val index = entries.indexOfFirst {
             it.packageName == focusPackage
@@ -105,9 +149,10 @@ internal fun FalCorAppMenu(
 
         if (
             index >= 0 &&
-            listState.layoutInfo.visibleItemsInfo.none {
-                it.index == index
-            }
+            (movingPackage != null ||
+                listState.layoutInfo.visibleItemsInfo.none {
+                    it.index == index
+                })
         ) {
             listState.scrollToItem(index)
         }
@@ -136,7 +181,11 @@ internal fun FalCorAppMenu(
             )
 
             Text(
-                text = "BACK  /  HOME",
+                text = if (movingPackage != null) {
+                    "LEFT / RIGHT: MOVE    OK: SAVE    BACK: CANCEL"
+                } else {
+                    "HOLD OK: MOVE    BACK: HOME"
+                },
                 color = Color(0xFF9AB4C7),
                 fontSize = 10.sp,
                 letterSpacing = 0.6.sp
@@ -156,7 +205,31 @@ internal fun FalCorAppMenu(
                 state = listState,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f),
+                    .weight(1f)
+                    .onPreviewKeyEvent { event ->
+                        if (movingPackage == null) {
+                            false
+                        } else {
+                            when (event.nativeKeyEvent.keyCode) {
+                                AndroidKeyEvent.KEYCODE_DPAD_LEFT -> {
+                                    if (event.type == KeyEventType.KeyDown) {
+                                        moveSelected(-1)
+                                    }
+                                    true
+                                }
+                                AndroidKeyEvent.KEYCODE_DPAD_RIGHT -> {
+                                    if (event.type == KeyEventType.KeyDown) {
+                                        moveSelected(1)
+                                    }
+                                    true
+                                }
+                                // Keep focus inside the row while moving.
+                                AndroidKeyEvent.KEYCODE_DPAD_UP,
+                                AndroidKeyEvent.KEYCODE_DPAD_DOWN -> true
+                                else -> false
+                            }
+                        }
+                    },
                 contentPadding = PaddingValues(
                     horizontal = 8.dp,
                     vertical = 5.dp
@@ -187,6 +260,7 @@ internal fun FalCorAppMenu(
                     CollectionAppCard(
                         entry = entry,
                         available = available,
+                        moving = movingPackage == entry.packageName,
                         modifier = Modifier
                             .width(116.dp)
                             .fillMaxHeight()
@@ -198,32 +272,19 @@ internal fun FalCorAppMenu(
                                 }
                             ),
                         onLongClick = {
-                            CollectionManager(context, collection)
-                                .showEntry(entry) {
-                                    val updated = store.load(collection)
-
-                                    focusPackage = updated
-                                        .firstOrNull {
-                                            it.packageName == entry.packageName
-                                        }
-                                        ?.packageName
-                                        ?: updated.getOrNull(
-                                            index.coerceAtMost(
-                                                updated.lastIndex
-                                            )
-                                        )?.packageName
-
-                                    entries = updated
-                                    focusRequestId++
-                                }
+                            if (movingPackage == null) {
+                                originalOrder = entries.toList()
+                                movingPackage = entry.packageName
+                                focusPackage = entry.packageName
+                                focusRequestId++
+                            }
                         },
                         onClick = {
-                            if (
+                            if (movingPackage != null) {
+                                finishReordering(save = true)
+                            } else if (
                                 !available ||
-                                !launchTvApp(
-                                    context,
-                                    entry.packageName
-                                )
+                                !launchTvApp(context, entry.packageName)
                             ) {
                                 Toast.makeText(
                                     context,
@@ -243,6 +304,7 @@ internal fun FalCorAppMenu(
 private fun CollectionAppCard(
     entry: AppEntry,
     available: Boolean,
+    moving: Boolean,
     modifier: Modifier = Modifier,
     onLongClick: () -> Unit,
     onClick: () -> Unit
@@ -281,11 +343,17 @@ private fun CollectionAppCard(
         ),
         border = ButtonDefaults.border(
             border = Border(
-                border = BorderStroke(1.dp, Color(0xFF42647D)),
+                border = BorderStroke(
+                    if (moving) 2.dp else 1.dp,
+                    if (moving) Color(0xFFFFBD59) else Color(0xFF42647D)
+                ),
                 shape = shape
             ),
             focusedBorder = Border(
-                border = BorderStroke(2.dp, Color(0xFFFFBD59)),
+                border = BorderStroke(
+                    if (moving) 3.dp else 2.dp,
+                    Color(0xFFFFBD59)
+                ),
                 shape = shape
             )
         ),
@@ -309,6 +377,14 @@ private fun CollectionAppCard(
                     )
                 )
         ) {
+            if (moving) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color(0x223D2B15))
+                )
+            }
+
             // Thin reflected edge, matching the home card treatment.
             Box(
                 modifier = Modifier
@@ -335,7 +411,7 @@ private fun CollectionAppCard(
 
                 Text(
                     text = entry.label,
-                    color = Color(0xFFF1F0E9),
+                    color = if (moving) Color(0xFFFFBD59) else Color(0xFFF1F0E9),
                     fontFamily = MenuFont,
                     fontWeight = FontWeight.Medium,
                     fontSize = 11.sp,
@@ -351,6 +427,16 @@ private fun CollectionAppCard(
                         )
                     )
                 )
+
+                if (moving) {
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = "MOVING",
+                        color = Color(0xFFFFBD59),
+                        fontSize = 8.sp,
+                        letterSpacing = 0.8.sp
+                    )
+                }
 
                 if (!available) {
                     Text(
